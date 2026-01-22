@@ -137,7 +137,7 @@ export default function Personal() {
       >
         <div className="flex-1">
           <p className="text-zinc-600 dark:text-zinc-400">
-            Bridging the gap in AIxHealth through drug discovery and medical imaging.
+            Bridging the gap in AI x Health through drug discovery and medical imaging.
           </p>
         </div>
       </motion.section>
