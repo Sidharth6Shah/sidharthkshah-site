@@ -131,20 +131,20 @@ export const BLOG_POSTS: BlogPost[] = [
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     label: 'Github',
-    link: 'https://github.com/ibelick',
+    link: 'https://github.com/sidharth6shah',
   },
-  {
-    label: 'Twitter',
-    link: 'https://twitter.com/ibelick',
-  },
+  // {
+  //   label: 'Twitter',
+  //   link: 'https://twitter.com/ibelick',
+  // },
   {
     label: 'LinkedIn',
-    link: 'https://www.linkedin.com/in/ibelick',
+    link: 'https://www.linkedin.com/in/sidharth-shah-805911304/',
   },
-  {
-    label: 'Instagram',
-    link: 'https://www.instagram.com/ibelick',
-  },
+  // {
+  //   label: 'Instagram',
+  //   link: 'https://www.instagram.com/ibelick',
+  // },
 ]
 
 export const EMAIL = 's78shah@uwaterloo.ca'
