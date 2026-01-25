@@ -2,7 +2,7 @@ type Project = {
   name: string
   description: string
   link: string
-  video: string
+  video?: string
   id: string
 }
 
@@ -29,49 +29,74 @@ type SocialLink = {
 
 export const PROJECTS: Project[] = [
   {
-    name: 'Motion Primitives Pro',
+    name: 'Drug-Ligand Affinity Predictor',
     description:
-      'Advanced components and templates to craft beautiful websites.',
-    link: 'https://pro.motion-primitives.com/',
-    video:
-      'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/newProfileItem/d898be8a-7037-4c71-af0c-8997239b050d.mp4?_a=DATAdtAAZAA0',
+      'This repository features an XGBoost baseline, along with 5 independant GNN-variant models, aiming to predict the pKd value between a given drug and it\'s target protein.',
+    link: 'https://github.com/Sidharth6Shah/Drug-Affinity-Prediction-Project',
+    // video:
+    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/newProfileItem/d898be8a-7037-4c71-af0c-8997239b050d.mp4?_a=DATAdtAAZAA0',
     id: 'project1',
   },
   {
-    name: 'Motion Primitives',
-    description: 'UI kit to make beautiful, animated interfaces.',
-    link: 'https://motion-primitives.com/',
-    video:
-      'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
+    name: 'Diabetes Prediction FNN',
+    description: 'Model that predicts diabetes onset based on several health parameters typically found in medical records.',
+    link: 'https://github.com/Sidharth6Shah/Diabetes-Prediction-with-FNNs',
+    // video:
+    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
     id: 'project2',
   },
+  {
+    name: 'RAG-Powered Chatbot for Mental Health Support',
+    description: 'Pretty self explanatory name haha .',
+    link: 'https://github.com/Sidharth6Shah/ai_therapist',
+    // video:
+    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
+    id: 'project3',
+  },
+  {
+    name: 'Similar Property Molecule Generator',
+    description: 'Uses Meta\'s ESM-2 protien language model to tweak input protein and return a slightly modified one with a high liklihood of similar properties.',
+    link: 'https://github.com/Sidharth6Shah/Antigen-Predictor-App',
+    // video:
+    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
+    id: 'project4',
+  },
+  // {
+  //   name: 'Motion Primitives3',
+  //   description: 'UI kit to make beautiful, animated interfaces.',
+  //   link: 'https://motion-primitives.com/',
+  //   video:
+  //     'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
+  //   id: 'project5',
+  // },
 ]
 
 export const WORK_EXPERIENCE: WorkExperience[] = [
   {
-    company: 'Reglazed Studio',
-    title: 'CEO',
-    start: '2024',
+    company: 'LeapAP',
+    title: 'Software Engineer Intern',
+    start: '2026',
     end: 'Present',
-    link: 'https://ibelick.com',
+    link: 'https://www.leapap.com',
     id: 'work1',
   },
   {
-    company: 'Freelance',
-    title: 'Design Engineer',
-    start: '2022',
-    end: '2024',
+    company: 'Bell Canada',
+    title: 'Software Engineer Intern',
+    start: '2025',
+    end: '2025',
     link: 'https://ibelick.com',
     id: 'work2',
   },
   {
-    company: 'Freelance',
-    title: 'Front-end Developer',
-    start: '2017',
-    end: 'Present',
-    link: 'https://ibelick.com',
+    company: 'autonomik.ai',
+    title: 'QA Engineer Intern',
+    start: '2024',
+    end: '2025',
+    link: 'https://autonomik.ai',
     id: 'work3',
   },
+  //https://ibelick.com
 ]
 
 export const BLOG_POSTS: BlogPost[] = [
