@@ -85,7 +85,7 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
     title: 'Software Engineer Intern',
     start: '2025',
     end: '2025',
-    link: 'https://ibelick.com',
+    link: 'https://www.bell.ca',
     id: 'work2',
   },
   {
