@@ -16,7 +16,7 @@ export function Header() {
           className="text-zinc-600 dark:text-zinc-500"
           delay={0.5}
         >
-          Honours Biomedical Engineering @ the University of Waterloo
+          Honours Computing & Biomedical Engineering @ the University of Waterloo
         </TextEffect>
       </div>
     </header>
