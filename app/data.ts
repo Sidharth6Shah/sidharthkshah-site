@@ -29,6 +29,14 @@ type SocialLink = {
 
 export const PROJECTS: Project[] = [
   {
+    name: 'Internship Scraper System',
+    description: 'Scrapers to autocheck for company internship postings.',
+    link: 'https://github.com/Sidharth6Shah/Internship-Scraper-System',
+    // video:
+    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
+    id: 'project5',
+  },
+  {
     name: 'Drug-Ligand Affinity Predictor',
     description:
       'This repository features an XGBoost baseline, along with 5 independant GNN-variant models, aiming to predict the pKd value between a given drug and it\'s target protein.',
@@ -60,14 +68,6 @@ export const PROJECTS: Project[] = [
     // video:
     //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
     id: 'project4',
-  },
-  {
-    name: 'Internship Scraper System',
-    description: 'Scrapers to autocheck for company internship postings.',
-    link: 'https://github.com/Sidharth6Shah/Internship-Scraper-System',
-    // video:
-    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
-    id: 'project5',
   },
   // {
   //   name: 'Motion Primitives3',
