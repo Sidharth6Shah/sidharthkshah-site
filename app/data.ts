@@ -63,7 +63,7 @@ export const PROJECTS: Project[] = [
   },
   {
     name: 'Similar Property Molecule Generator',
-    description: 'Uses Meta\'s ESM-2 protien language model to tweak input protein and return a slightly modified one with a high liklihood of similar properties.',
+    description: 'Uses Meta\'s ESM-2 protein language model to tweak input protein and return a slightly modified one with a high likelihood of similar properties.',
     link: 'https://github.com/Sidharth6Shah/Antigen-Predictor-App',
     // video:
     //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
