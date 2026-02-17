@@ -108,6 +108,12 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
 ]
 
 export const BLOG_POSTS: BlogPost[] = [
+  {
+    title: 'Predicting Drug-Protein Binding Affinity with Graph Neural Networks',
+    description: 'Building an end-to-end machine learning pipeline using Graph Neural Networks to predict how strongly drug molecules bind to proteins, with lessons on data splitting, protein embeddings, and molecular graph representations.',
+    link: '/blog/binding-affinity-research',
+    uid: 'blog-1',
+  },
   // {
   //   title: 'Exploring the Intersection of Design, AI, and Design Engineering',
   //   description: 'How AI is changing the way we design',

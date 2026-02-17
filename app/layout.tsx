@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   title: {
     default: 'Sidharth Shah | Biomedical Engineer',
-    template: '%s | Nim'
+    template: '%s | Shah'
   },
   description:  'About Sidharth Shah.',
 };
