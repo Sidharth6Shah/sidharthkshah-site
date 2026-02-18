@@ -141,7 +141,7 @@ export default function Personal() {
       >
         <div className="flex-1">
           <p className="text-zinc-600 dark:text-zinc-400">
-            Revolutionizing medical processes with AI.
+            Revolutionizing medical process.
           </p>
         </div>
       </motion.section>
