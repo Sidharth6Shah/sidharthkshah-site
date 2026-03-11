@@ -120,13 +120,12 @@ export const BLOG_POSTS: BlogPost[] = [
     link: '/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection',
     uid: 'blog-2',
   },
-  // {
-  //   title: 'Why I left my job to start my own company',
-  //   description:
-  //     'A deep dive into my decision to leave my job and start my own company',
-  //   link: '/blog/exploring-the-intersection-of-design-ai-and-design-engineering',
-  //   uid: 'blog-2',
-  // },
+  {
+    title: 'Progressive Optimization of HydraLA-Net for Microaneurysm Segmentation',
+    description: 'Research paper submitted to CUCAI 2026 detailing my Wat.AI team\'s project, See-DR. The paper details our entire process, from motivations and methods, to results, and interpretations.',
+    link: '/blog/Progressive-Optimization-of-HydraLA-Net-for-Microaneurysm-Segmentation',
+    uid: 'blog-3',
+  },
   // {
   //   title: 'What I learned from my first year of freelancing',
   //   description:
