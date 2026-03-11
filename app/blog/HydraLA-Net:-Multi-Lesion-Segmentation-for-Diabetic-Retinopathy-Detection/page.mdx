@@ -13,7 +13,7 @@ Diabetic retinopathy (DR) is one of the leading causes of preventable blindness 
 
 In this project, I developed **HydraLA-Net**, a deep learning system that automatically segments four types of retinal lesions in fundus images: **Hard Exudates (EX)**, **Hemorrhages (HE)**, **Microaneurysms (MA)**, and **Soft Exudates (SE)**. The system is built on the LA-Net (Lesion-Aware Network) architecture with several novel enhancements, particularly a "Hydra" segmentation head that improves per-class performance.
 
-![HydraLA-Net Architecture](../model_training/utils/assets/HydraLA-Net.png)
+![HydraLA-Net Architecture](/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection/HydraLA-Net.png)
 
 ---
 
@@ -21,7 +21,7 @@ In this project, I developed **HydraLA-Net**, a deep learning system that automa
 
 Microaneurysms are particularly challenging to detect - they're often just a few pixels wide and appear as subtle red dots on the retina. The dataset suffers from severe class imbalance: microaneurysms comprise only a tiny fraction of pixels compared to the background.
 
-![Fundus Image Samples](../model_training/utils/assets/sample1.png)
+![Fundus Image Samples](/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection/sample1.png)
 
 Traditional approaches struggle with this imbalance, often missing small lesions entirely or generating too many false positives.
 
@@ -96,7 +96,7 @@ I tested three CLAHE modes:
 **2. Green Channel Mode** (selected for final model): Apply CLAHE only to the green channel
 **3. CASP Mode**: Channel-Aware Selective Preprocessing with different processing per channel
 
-![CLAHE Comparison](../model_training/utils/assets/clahe_green_comparison.png)
+![CLAHE Comparison](/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection/clahe_green_comparison.png)
 
 **Why did I choose Green Channel CLAHE?**
 
@@ -185,7 +185,7 @@ Each branch learns specialized features for its lesion type, avoiding the compro
 
 The biggest challenge in this project was **severe class imbalance**. Microaneurysms might occupy less than 0.01% of image pixels, while the background dominates.
 
-![Pixel Distribution](../model_training/utils/assets/pixel_distribution.png)
+![Pixel Distribution](/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection/pixel_distribution.png)
 
 I implemented a **Dual Loss** combining Focal Tversky Loss and Binary Cross-Entropy:
 
