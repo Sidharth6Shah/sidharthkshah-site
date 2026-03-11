@@ -114,12 +114,12 @@ export const BLOG_POSTS: BlogPost[] = [
     link: '/blog/binding-affinity-research',
     uid: 'blog-1',
   },
-  // {
-  //   title: 'Exploring the Intersection of Design, AI, and Design Engineering',
-  //   description: 'How AI is changing the way we design',
-  //   link: '/blog/exploring-the-intersection-of-design-ai-and-design-engineering',
-  //   uid: 'blog-1',
-  // },
+  {
+    title: 'HydraLA-Net: Multi-Lesion Segmentation for Diabetic Retinopathy Detection',
+    description: 'Exploring preprocessing and DL methods for multi-lesion segmentation in diabetic retinopathy detection, including a novel HydraLA-Net architecture and insights on handling class imbalance and data augmentation.',
+    link: '/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection',
+    uid: 'blog-2',
+  },
   // {
   //   title: 'Why I left my job to start my own company',
   //   description:
