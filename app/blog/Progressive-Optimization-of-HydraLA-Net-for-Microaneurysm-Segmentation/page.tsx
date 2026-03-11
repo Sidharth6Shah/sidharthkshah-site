@@ -10,7 +10,7 @@ export default function ResearchPaper() {
   return (
     <div className="flex flex-col -mx-4 h-[calc(100vh-5rem)]">
       <div className="mb-3 px-4">
-        <h1 className="text-xl font-medium mb-1">
+        <h1 className="text-lg font-medium mb-1">
           Progressive Optimization of HydraLA-Net for Microaneurysm Segmentation
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400 text-sm">
