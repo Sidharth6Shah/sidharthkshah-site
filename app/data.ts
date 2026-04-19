@@ -55,7 +55,7 @@ export const PROJECTS: Project[] = [
   },
   {
     name: 'RAG-Powered Chatbot for Mental Health Support',
-    description: 'Pretty self explanatory 👍🏾.',
+    description: 'Chatbot tailored towards mental health support using retreival augmented generation, OpenAI API.',
     link: 'https://github.com/Sidharth6Shah/ai_therapist',
     // video:
     //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
