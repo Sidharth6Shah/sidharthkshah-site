@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { WEBSITE_URL } from '@/lib/constants'
 import { getContent } from '@/lib/content'
 import { BindingField } from './components/binding-field'
+import { DnaHelix } from './components/dna-helix'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -67,6 +68,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <BindingField />
+          <DnaHelix />
           <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 sm:px-8">
             <Header />
             <div className="flex-1">{children}</div>
