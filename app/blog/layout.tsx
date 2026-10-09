@@ -1,29 +1,28 @@
 'use client'
+import Link from 'next/link'
 import { TextMorph } from '@/components/ui/text-morph'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
 import { useEffect, useState } from 'react'
 
 function CopyButton() {
-  const [text, setText] = useState('Copy')
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const [text, setText] = useState('Copy link')
 
   useEffect(() => {
-    setTimeout(() => {
-      setText('Copy')
-    }, 2000)
+    if (text === 'Copy link') return
+    const t = setTimeout(() => setText('Copy link'), 2000)
+    return () => clearTimeout(t)
   }, [text])
 
   return (
     <button
       onClick={() => {
-        setText('Copied')
-        navigator.clipboard.writeText(currentUrl)
+        navigator.clipboard.writeText(window.location.href)
+        setText('Link copied')
       }}
-      className="font-base flex items-center gap-1 text-center text-sm text-zinc-500 transition-colors dark:text-zinc-400"
+      className="inline-flex min-h-11 items-center rounded-full px-3 text-[15px] text-muted transition-colors hover:bg-wash hover:text-ink"
       type="button"
     >
       <TextMorph>{text}</TextMorph>
-      <span>URL</span>
     </button>
   )
 }
@@ -35,20 +34,23 @@ export default function LayoutBlogPost({
 }) {
   return (
     <>
-      <div className="pointer-events-none fixed left-0 top-0 z-10 h-12 w-full bg-gray-100 to-transparent backdrop-blur-xl [-webkit-mask-image:linear-gradient(to_bottom,black,transparent)] dark:bg-zinc-950" />
       <ScrollProgress
-        className="fixed top-0 z-20 h-0.5 bg-gray-300 dark:bg-zinc-600"
+        className="fixed top-0 z-20 h-[3px] bg-eosin"
         springOptions={{
           bounce: 0,
         }}
       />
-
-      <div className="absolute right-4 top-24">
-        <CopyButton />
+      <div className="mx-auto w-full max-w-[72ch]">
+        <div className="mt-6 flex items-center justify-between gap-4">
+          <Link href="/#writing" className="text-link text-[15px] text-muted hover:text-ink">
+            All writing
+          </Link>
+          <CopyButton />
+        </div>
+        <main className="prose prose-lg mt-10 max-w-none pb-20 prose-h1:text-[clamp(32px,5vw,48px)] prose-h1:leading-[1.05] prose-h1:font-bold prose-h1:tracking-tight prose-h2:mt-14 prose-h2:scroll-m-20 prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-semibold prose-h4:font-semibold prose-a:underline-offset-4 prose-strong:font-semibold prose-img:rounded-2xl">
+          {children}
+        </main>
       </div>
-      <main className="prose prose-gray mt-24 pb-20 prose-h4:prose-base dark:prose-invert prose-h1:text-xl prose-h1:font-medium prose-h2:mt-12 prose-h2:scroll-m-20 prose-h2:text-lg prose-h2:font-medium prose-h3:text-base prose-h3:font-medium prose-h4:font-medium prose-h5:text-base prose-h5:font-medium prose-h6:text-base prose-h6:font-medium prose-strong:font-medium">
-        {children}
-      </main>
     </>
   )
 }

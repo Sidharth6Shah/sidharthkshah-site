@@ -1,163 +1,199 @@
-type Project = {
+export type Project = {
+  name: string
+  area: string
+  description: string
+  stack: string[]
+  link?: string
+  linkLabel?: string
+  status?: string
+}
+
+export type ShortProject = {
   name: string
   description: string
   link: string
-  video?: string
-  id: string
 }
 
-type WorkExperience = {
+export type WorkExperience = {
   company: string
   title: string
+  detail: string
   start: string
   end: string
-  link: string
-  id: string
+  link?: string
+  current?: boolean
 }
 
-type BlogPost = {
+export type NowItem = {
   title: string
+  context: string
+  description: string
+}
+
+export type BlogPost = {
+  title: string
+  kind: string
   description: string
   link: string
-  uid: string
 }
 
-type SocialLink = {
+export type SocialLink = {
   label: string
   link: string
 }
 
+export const NOW: NowItem[] = [
+  {
+    title: 'Graph neural networks for autism genetics',
+    context: 'Co-op at The Centre for Applied Genomics, SickKids, fall 2026',
+    description:
+      'Improving a heterogeneous graph transformer that links genes, variants and patients, and bringing in the SPARK cohort to grow the training data.',
+  },
+  {
+    title: 'Arc Institute Virtual Cell Challenge',
+    context: 'Competition, 2026',
+    description:
+      'Predicting what happens to a cell when a gene is knocked down, in cell lines the model has never seen.',
+  },
+]
+
+export const FEATURED: Project = {
+  name: 'Drug–ligand binding affinity predictor',
+  area: 'Drug discovery',
+  description:
+    'Predicts how strongly a drug binds its target protein. Protein sequences go through ESM-2, ligands become molecular graphs, and five GNN variants are tested against XGBoost and random forest baselines.',
+  stack: ['PyTorch Geometric', 'ESM-2', 'RDKit', 'XGBoost'],
+  link: 'https://github.com/Sidharth6Shah/Drug-Affinity-Prediction-Project',
+  linkLabel: 'Code on GitHub',
+}
+
 export const PROJECTS: Project[] = [
   {
-    name: 'Drug-Ligand Affinity Predictor',
+    name: 'FragFlow',
+    area: 'Generative chemistry',
+    status: 'In progress',
     description:
-      'This repository features an XGBoost baseline, along with 5 independant GNN-variant models, aiming to predict the pKd value between a given drug and it\'s target protein.',
-    link: 'https://github.com/Sidharth6Shah/Drug-Affinity-Prediction-Project',
-    // video:
-    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/newProfileItem/d898be8a-7037-4c71-af0c-8997239b050d.mp4?_a=DATAdtAAZAA0',
-    id: 'project1',
+      'A GFlowNet that assembles drug-like molecules one fragment at a time, rewarded on drug-likeness, ease of synthesis and solubility.',
+    stack: ['torchgfn', 'PyTorch Geometric', 'ZINC250K'],
+    link: 'https://github.com/Sidharth6Shah/fragflow',
+    linkLabel: 'Code on GitHub',
   },
   {
-    name: 'Diabetes Prediction FNN',
-    description: 'Model that predicts diabetes onset based on several health parameters typically found in medical records.',
-    link: 'https://github.com/Sidharth6Shah/Diabetes-Prediction-with-FNNs',
-    // video:
-    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
-    id: 'project2',
+    name: 'CardioGlasses',
+    area: 'Wearables',
+    status: 'MHacks 2026 track winner',
+    description:
+      'Glasses with heart and motion sensors that track heart metrics and raise alerts. Won the FinchNode HealthTech track. I built the layer that turns raw signals into decisions.',
+    stack: ['PPG', 'IMU', 'FinchNode API'],
+    link: 'https://github.com/tTong32/CardioGlasses',
+    linkLabel: 'Code on GitHub',
   },
   {
-    name: 'Internship Scraper System',
-    description: 'Scrapers to autocheck for company internship postings.',
-    link: 'https://github.com/Sidharth6Shah/Internship-Scraper-System',
-    // video:
-    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
-    id: 'project5',
+    name: 'See-DR',
+    area: 'Medical imaging',
+    status: 'Paper at CUCAI 2026',
+    description:
+      'Finds several kinds of retinal lesions at once to help detect diabetic retinopathy, using our HydraLA-Net architecture. Built with my Wat.AI team.',
+    stack: ['PyTorch', 'Segmentation'],
+    link: '/blog/Progressive-Optimization-of-HydraLA-Net-for-Microaneurysm-Segmentation',
+    linkLabel: 'Read the paper',
   },
   {
-    name: 'RAG-Powered Chatbot for Mental Health Support',
-    description: 'Chatbot tailored towards mental health support using retreival augmented generation, OpenAI API.',
-    link: 'https://github.com/Sidharth6Shah/ai_therapist',
-    // video:
-    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
-    id: 'project3',
+    name: 'PROTACForge',
+    area: 'Drug discovery',
+    status: 'In progress',
+    description:
+      'A pipeline for designing PROTAC degraders: prepare the building blocks, triage candidates in 2D, then sample how the three-part complex fits together.',
+    stack: ['RDKit', 'PyTorch'],
   },
+]
+
+export const MORE_PROJECTS: ShortProject[] = [
   {
-    name: 'Similar Property Molecule Generator',
-    description: 'Uses Meta\'s ESM-2 protein language model to tweak input protein and return a slightly modified one with a high likelihood of similar properties.',
+    name: 'Similar-property protein generator',
+    description: 'ESM-2 suggests small edits that keep a protein’s properties',
     link: 'https://github.com/Sidharth6Shah/Antigen-Predictor-App',
-    // video:
-    //   'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
-    id: 'project4',
   },
-  // {
-  //   name: 'Motion Primitives3',
-  //   description: 'UI kit to make beautiful, animated interfaces.',
-  //   link: 'https://motion-primitives.com/',
-  //   video:
-  //     'https://res.cloudinary.com/read-cv/video/upload/t_v_b/v1/1/profileItems/W2azTw5BVbMXfj7F53G92hMVIn32/XSfIvT7BUWbPRXhrbLed/ee6871c9-8400-49d2-8be9-e32675eabf7e.mp4?_a=DATAdtAAZAA0',
-  //   id: 'project5',
-  // },
+  {
+    name: 'Diabetes prediction network',
+    description: 'Predicts diabetes onset from routine health records',
+    link: 'https://github.com/Sidharth6Shah/Diabetes-Prediction-with-FNNs',
+  },
+  {
+    name: 'Mental health support chatbot',
+    description: 'Retrieval-augmented chatbot on the OpenAI API',
+    link: 'https://github.com/Sidharth6Shah/ai_therapist',
+  },
+  {
+    name: 'Internship scraper',
+    description: 'Checks company career pages for new internship postings',
+    link: 'https://github.com/Sidharth6Shah/Internship-Scraper-System',
+  },
 ]
 
 export const WORK_EXPERIENCE: WorkExperience[] = [
   {
+    company: 'The Centre for Applied Genomics, SickKids',
+    title: 'Bioinformatics Software Research Student',
+    detail: 'Scherer Lab, affiliated with Molecular Genetics at U of T',
+    start: '2026',
+    end: 'Now',
+    current: true,
+  },
+  {
     company: 'LeapAP',
     title: 'Software Engineer Intern',
+    detail: 'Web scraping',
     start: '2026',
-    end: 'Present',
+    end: '2026',
     link: 'https://www.leapap.com',
-    id: 'work1',
   },
   {
     company: 'Bell Canada',
     title: 'Software Engineer Intern',
+    detail: 'Full-stack',
     start: '2025',
     end: '2025',
     link: 'https://www.bell.ca',
-    id: 'work2',
   },
   {
     company: 'autonomik.ai',
     title: 'QA Engineer Intern',
+    detail: 'Quality assurance',
     start: '2024',
     end: '2025',
     link: 'https://autonomik.ai',
-    id: 'work3',
   },
-  //https://ibelick.com
 ]
 
 export const BLOG_POSTS: BlogPost[] = [
   {
-    title: 'Predicting Drug-Protein Binding Affinity with Graph Neural Networks',
-    description: 'Building an end-to-end machine learning pipeline using Graph Neural Networks to predict how strongly drug molecules bind to proteins, with lessons on data splitting, protein embeddings, and molecular graph representations.',
+    title: 'Predicting drug–protein binding affinity with graph neural networks',
+    kind: 'Notes',
+    description:
+      'An end-to-end GNN pipeline, and what I learned about data splits, protein embeddings and molecular graphs.',
     link: '/blog/binding-affinity-research',
-    uid: 'blog-1',
   },
   {
-    title: 'HydraLA-Net: Multi-Lesion Segmentation for Diabetic Retinopathy Detection',
-    description: 'Exploring preprocessing and DL methods for multi-lesion segmentation in diabetic retinopathy detection, including a novel HydraLA-Net architecture and insights on handling class imbalance and data augmentation.',
-    link: '/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection',
-    uid: 'blog-2',
-  },
-  {
-    title: 'Progressive Optimization of HydraLA-Net for Microaneurysm Segmentation',
-    description: 'Research paper submitted to CUCAI 2026 detailing my Wat.AI team\'s project, See-DR. The paper details our entire process, from motivations and methods, to results, and interpretations.',
+    title: 'Progressive optimization of HydraLA-Net for microaneurysm segmentation',
+    kind: 'Paper',
+    description:
+      'Our Wat.AI team’s CUCAI 2026 paper: why we built it, how, and what the results mean.',
     link: '/blog/Progressive-Optimization-of-HydraLA-Net-for-Microaneurysm-Segmentation',
-    uid: 'blog-3',
   },
-  // {
-  //   title: 'What I learned from my first year of freelancing',
-  //   description:
-  //     'A look back at my first year of freelancing and what I learned',
-  //   link: '/blog/exploring-the-intersection-of-design-ai-and-design-engineering',
-  //   uid: 'blog-3',
-  // },
-  // {
-  //   title: 'How to Export Metadata from MDX for Next.js SEO',
-  //   description: 'A guide on exporting metadata from MDX files to leverage Next.js SEO features.',
-  //   link: '/blog/example-mdx-metadata',
-  //   uid: 'blog-4',
-  // },
+  {
+    title: 'HydraLA-Net: multi-lesion segmentation for diabetic retinopathy',
+    kind: 'Notes',
+    description:
+      'Preprocessing, class imbalance and augmentation when segmenting several lesion types at once.',
+    link: '/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection',
+  },
 ]
 
 export const SOCIAL_LINKS: SocialLink[] = [
-  {
-    label: 'Github',
-    link: 'https://github.com/sidharth6shah',
-  },
-  {
-    label: 'X (Twitter)',
-    link: 'https://x.com/sidharthkshah',
-  },
-  {
-    label: 'LinkedIn',
-    link: 'https://www.linkedin.com/in/sidharth-shah-805911304/',
-  },
-  // {
-  //   label: 'Instagram',
-  //   link: 'https://www.instagram.com/ibelick',
-  // },
+  { label: 'GitHub', link: 'https://github.com/sidharth6shah' },
+  { label: 'LinkedIn', link: 'https://www.linkedin.com/in/sidharth-shah-805911304/' },
+  { label: 'X', link: 'https://x.com/sidharthkshah' },
 ]
 
 export const EMAIL = 's78shah@uwaterloo.ca'
