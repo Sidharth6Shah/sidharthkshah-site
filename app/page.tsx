@@ -34,10 +34,10 @@ export default function Home() {
   const { person, hero } = c
 
   return (
-    <main>
+    <main className="overflow-x-clip">
       {/* Hero */}
       <section className="grid grid-cols-1 items-center gap-6 pt-8 pb-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-12 md:pt-12 md:pb-24">
-        <div className="flex flex-col gap-6">
+        <div className="relative z-10 flex flex-col gap-6">
           <h1 className="text-[clamp(40px,5.2vw,64px)] leading-[1] font-semibold tracking-[-0.03em]">
             {person.name}
           </h1>
@@ -62,12 +62,12 @@ export default function Home() {
           </div>
         </div>
 
-        <figure>
+        <figure className="relative z-0 my-2 md:my-0">
           <Protein
-            className="mx-auto aspect-[3/2] w-full max-w-[620px]"
-            label="A rotating 3D point cloud of an enzyme, with an inhibitor drug bound inside it."
+            className="mx-auto aspect-[5/4] w-full max-w-[600px]"
+            label="A rotating 3D ribbon diagram of an enzyme, with an inhibitor drug bound inside it."
           />
-          <figcaption className="mx-auto mt-2 max-w-[46ch] text-center text-[14px] leading-snug text-muted">
+          <figcaption className="relative z-10 mx-auto mt-8 max-w-[46ch] text-center text-[14px] leading-snug text-muted">
             {hero.visual_caption}
           </figcaption>
         </figure>

@@ -57,8 +57,9 @@ hero:
     for Applied Genomics at SickKids.
   # Caption under the 3D protein. Structure: PDB 4ZUO.
   visual_caption: >-
-    A bacterial enzyme from the histone deacetylase family, with an
-    inhibitor bound in each active site (pink). Drag to turn it.
+    A bacterial enzyme from the histone deacetylase family, drawn as a
+    ribbon. Each active site holds an inhibitor (pink) beside a zinc ion.
+    Drag to turn it.
 
 # ── "Now" section ────────────────────────────────────────────────────
 now:
