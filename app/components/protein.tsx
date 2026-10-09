@@ -2,17 +2,16 @@
 import { useEffect, useRef } from 'react'
 
 /*
-  A real enzyme (PDB 4ZUO) drawn as a ribbon diagram, the way crystal
-  structures are usually shown: helices as coils, sheet strands as flat
-  bands, loops as thin tubes. The bound inhibitor is a pink ball-and-stick
-  model sitting next to its zinc ion.
+  A real enzyme (PDB 4ZUO) rendered in 3D (three.js) as a ribbon diagram:
+  helices and sheet strands as thick glossy tubes, loops as thin tubes.
+  The bound inhibitor is a pink ball-and-stick model beside its zinc ion.
 
-  - The backbone draws itself in once on load
+  - The backbone grows in once on load, then the inhibitor appears
   - Turns slowly by itself; drag to spin it (with a little inertia)
   - Tilts slightly toward the cursor on hover
   - Scrolling turns it a little further
   - The canvas is larger than its slot, so the protein is never clipped
-  - With reduced motion: drawn still, drag still works
+  - With reduced motion: a still frame, drag still works
 */
 
 type Segment = { chain: string; ss: string; p: number[] }
@@ -22,343 +21,312 @@ type Data = {
   zinc: number[]
 }
 
-type RGB = [number, number, number]
-
-function hexToRgb(hex: string): RGB {
-  const h = hex.replace('#', '')
-  const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
-  const n = parseInt(full, 16)
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
-}
-
-function mix(a: RGB, b: RGB, t: number) {
-  return `rgb(${Math.round(a[0] + (b[0] - a[0]) * t)},${Math.round(a[1] + (b[1] - a[1]) * t)},${Math.round(a[2] + (b[2] - a[2]) * t)})`
-}
-
-// Item kinds for the painter's sort
-const SEG = 0
-const BOND = 1
-const ATOM = 2
-const ZN = 3
+// Tube radius per secondary structure, in model units (protein fits a unit sphere)
+const TUBE = { H: 0.024, E: 0.021, C: 0.008 } as const
 
 export function Protein({ className, label }: { className?: string; label: string }) {
   const wrapRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const hostRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const wrap = wrapRef.current
-    const canvas = canvasRef.current
-    if (!wrap || !canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
+    const host = hostRef.current
+    if (!wrap || !host) return
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let disposed = false
-    let raf = 0
+    let cleanup = () => {}
 
-    // Geometry (model space, unit sphere)
-    let pts = new Float32Array(0) // backbone curve points, all segments concatenated
-    let ssCode = new Uint8Array(0) // 0 loop, 1 helix, 2 strand
-    const segStart: number[] = []
-    const segEnd: number[] = []
-    let lig = new Float32Array(0)
-    let ligBonds: number[] = []
-    let zinc = new Float32Array(0)
-    let total = 0
-
-    // Projected positions
-    let P = new Float32Array(0) // backbone: sx, sy, z, perspective scale
-    let L = new Float32Array(0)
-    let Z = new Float32Array(0)
-
-    const items: { k: number; i: number; d: number }[] = []
-
-    // View
-    let cw = 0
-    let ch = 0
-    let slotW = 0
-    let yaw = 0.5
-    let pitch = 0.35
-    let yawV = 0
-    let pitchV = 0
-    let tiltX = 0
-    let tiltY = 0
-    let tiltTX = 0
-    let tiltTY = 0
-    let reveal = reduceMotion ? 1 : 0
-    let dragging = false
-    let last = { x: 0, y: 0 }
-    let scrollTurn = 0
-    let visible = true
-    let colors = readColors()
-
-    function readColors() {
-      const s = getComputedStyle(document.documentElement)
-      const get = (v: string, f: string) => hexToRgb(s.getPropertyValue(v).trim() || f)
-      return {
-        ground: get('--ground', '#fbf8f9'),
-        helix: get('--hema', '#4636a6'),
-        strand: get('--ink', '#1f1a36'),
-        loop: get('--muted', '#5b5570'),
-        lig: get('--eosin', '#b8355f'),
-        zinc: get('--muted', '#5b5570'),
-      }
-    }
-
-    function resize() {
-      const rect = canvas!.getBoundingClientRect()
-      cw = rect.width
-      ch = rect.height
-      slotW = wrap!.getBoundingClientRect().width
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas!.width = Math.round(cw * dpr)
-      canvas!.height = Math.round(ch * dpr)
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
-    }
-
-    function projectInto(src: Float32Array, dst: Float32Array, stride: number) {
-      const a = yaw + scrollTurn + tiltX
-      const b = pitch + tiltY
-      const cy = Math.cos(a)
-      const sy = Math.sin(a)
-      const cp = Math.cos(b)
-      const sp = Math.sin(b)
-      const r = slotW * 0.43
-      const cam = 4
-      const n = src.length / 3
-      for (let i = 0; i < n; i++) {
-        const j = i * 3
-        const x = src[j]
-        const y = src[j + 1]
-        const z = src[j + 2]
-        const x1 = x * cy + z * sy
-        const z1 = -x * sy + z * cy
-        const y1 = y * cp - z1 * sp
-        const z2 = y * sp + z1 * cp
-        const s = cam / (cam - z2)
-        const o = i * stride
-        dst[o] = cw / 2 + x1 * r * s
-        dst[o + 1] = ch / 2 + y1 * r * s
-        dst[o + 2] = z2
-        if (stride > 3) dst[o + 3] = s
-      }
-    }
-
-    function draw() {
-      projectInto(pts, P, 4)
-      projectInto(lig, L, 3)
-      projectInto(zinc, Z, 3)
-      ctx!.clearRect(0, 0, cw, ch)
-
-      const r = slotW * 0.43
-      const shown = Math.floor(reveal * total)
-      const ligAlpha = reduceMotion ? 1 : Math.max(0, Math.min(1, (reveal - 0.85) / 0.15))
-
-      items.length = 0
-      for (let s = 0; s < segStart.length; s++) {
-        for (let i = segStart[s]; i < segEnd[s] - 1; i++) {
-          if (i >= shown) break
-          items.push({ k: SEG, i, d: (P[i * 4 + 2] + P[(i + 1) * 4 + 2]) / 2 })
-        }
-      }
-      if (ligAlpha > 0) {
-        for (let b = 0; b < ligBonds.length; b += 2) {
-          items.push({ k: BOND, i: b, d: (L[ligBonds[b] * 3 + 2] + L[ligBonds[b + 1] * 3 + 2]) / 2 })
-        }
-        for (let a = 0; a < lig.length / 3; a++) items.push({ k: ATOM, i: a, d: L[a * 3 + 2] + 0.002 })
-        for (let a = 0; a < zinc.length / 3; a++) items.push({ k: ZN, i: a, d: Z[a * 3 + 2] })
-      }
-      items.sort((p, q) => p.d - q.d)
-
-      ctx!.lineCap = 'round'
-      ctx!.lineJoin = 'round'
-      const widthFor = [r * 0.012, r * 0.042, r * 0.038]
-      for (const it of items) {
-        const fog = (1 - (it.d + 1) / 2) * 0.7 // far = faded toward background
-        if (it.k === SEG) {
-          const i = it.i
-          const code = ssCode[i]
-          const base = code === 1 ? colors.helix : code === 2 ? colors.strand : colors.loop
-          const s = (P[i * 4 + 3] + P[(i + 1) * 4 + 3]) / 2
-          ctx!.globalAlpha = 1
-          ctx!.strokeStyle = mix(base, colors.ground, fog)
-          ctx!.lineWidth = Math.max(1, widthFor[code] * s)
-          ctx!.beginPath()
-          ctx!.moveTo(P[i * 4], P[i * 4 + 1])
-          ctx!.lineTo(P[(i + 1) * 4], P[(i + 1) * 4 + 1])
-          ctx!.stroke()
-        } else if (it.k === BOND) {
-          const a = ligBonds[it.i]
-          const b = ligBonds[it.i + 1]
-          ctx!.globalAlpha = ligAlpha
-          ctx!.strokeStyle = mix(colors.lig, colors.ground, fog * 0.5)
-          ctx!.lineWidth = Math.max(1.5, r * 0.018)
-          ctx!.beginPath()
-          ctx!.moveTo(L[a * 3], L[a * 3 + 1])
-          ctx!.lineTo(L[b * 3], L[b * 3 + 1])
-          ctx!.stroke()
-        } else if (it.k === ATOM) {
-          const a = it.i
-          ctx!.globalAlpha = ligAlpha
-          ctx!.fillStyle = mix(colors.lig, colors.ground, fog * 0.5)
-          ctx!.beginPath()
-          ctx!.arc(L[a * 3], L[a * 3 + 1], Math.max(2.5, r * 0.025), 0, Math.PI * 2)
-          ctx!.fill()
-        } else {
-          const a = it.i
-          ctx!.globalAlpha = ligAlpha
-          ctx!.fillStyle = mix(colors.zinc, colors.ground, fog * 0.5)
-          ctx!.beginPath()
-          ctx!.arc(Z[a * 3], Z[a * 3 + 1], Math.max(3, r * 0.032), 0, Math.PI * 2)
-          ctx!.fill()
-        }
-      }
-      ctx!.globalAlpha = 1
-    }
-
-    function frame() {
-      raf = 0
+    ;(async () => {
+      const [THREE, { RoomEnvironment }, data] = await Promise.all([
+        import('three'),
+        import('three/examples/jsm/environments/RoomEnvironment.js'),
+        fetch('/protein.json').then((r) => r.json() as Promise<Data>),
+      ])
       if (disposed) return
-      let moving = false
-      if (reveal < 1) {
-        reveal = Math.min(1, reveal + 0.009)
-        moving = true
-      }
-      if (!dragging) {
-        yawV *= 0.95
-        pitchV *= 0.92
-        yaw += yawV + (reduceMotion ? 0 : 0.0018)
-        pitch += pitchV
-        pitch += (0.35 - pitch) * 0.008
-      }
-      tiltX += (tiltTX - tiltX) * 0.06
-      tiltY += (tiltTY - tiltY) * 0.06
-      moving =
-        moving ||
-        !reduceMotion ||
-        dragging ||
-        Math.abs(yawV) > 1e-4 ||
-        Math.abs(pitchV) > 1e-4 ||
-        Math.abs(tiltTX - tiltX) > 1e-3 ||
-        Math.abs(tiltTY - tiltY) > 1e-3
-      if (visible) draw()
-      if (moving && visible) raf = requestAnimationFrame(frame)
-    }
 
-    function kick() {
-      if (!raf && !disposed) raf = requestAnimationFrame(frame)
-    }
-
-    // Pointer events live on the slot, not the oversized canvas,
-    // so the canvas never blocks clicks on the text beside it.
-    function local(e: PointerEvent) {
-      const rect = wrap!.getBoundingClientRect()
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top, w: rect.width, h: rect.height }
-    }
-    function onDown(e: PointerEvent) {
-      dragging = true
-      const p = local(e)
-      last = { x: p.x, y: p.y }
-      wrap!.setPointerCapture(e.pointerId)
-      wrap!.style.cursor = 'grabbing'
-      kick()
-    }
-    function onMove(e: PointerEvent) {
-      const p = local(e)
-      if (dragging) {
-        yawV = (p.x - last.x) * 0.006
-        pitchV = (p.y - last.y) * 0.006
-        yaw += yawV
-        pitch = Math.max(-1.3, Math.min(1.3, pitch + pitchV))
-        last = { x: p.x, y: p.y }
-      } else if (e.pointerType === 'mouse' && !reduceMotion) {
-        tiltTX = (p.x / p.w - 0.5) * 0.35
-        tiltTY = (p.y / p.h - 0.5) * 0.25
+      let renderer: InstanceType<typeof THREE.WebGLRenderer>
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+      } catch {
+        return // no WebGL: the caption still explains the figure
       }
-      kick()
-    }
-    function onUp(e: PointerEvent) {
-      dragging = false
-      wrap!.style.cursor = 'grab'
-      if (wrap!.hasPointerCapture(e.pointerId)) wrap!.releasePointerCapture(e.pointerId)
-      kick()
-    }
-    function onLeave() {
-      tiltTX = 0
-      tiltTY = 0
-      kick()
-    }
-    function onScroll() {
-      scrollTurn = window.scrollY * 0.0016
-      kick()
-    }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+      renderer.setClearColor(0x000000, 0)
+      renderer.toneMapping = THREE.ACESFilmicToneMapping
+      renderer.outputColorSpace = THREE.SRGBColorSpace
+      const canvas = renderer.domElement
+      canvas.style.width = '100%'
+      canvas.style.height = '100%'
+      host.appendChild(canvas)
 
-    fetch('/protein.json')
-      .then((r) => r.json())
-      .then((d: Data) => {
-        if (disposed) return
-        const all: number[] = []
-        const codes: number[] = []
-        for (const seg of d.segments) {
-          segStart.push(all.length / 3)
-          for (let i = 0; i < seg.p.length; i++) all.push(seg.p[i] / 1000)
-          for (const c of seg.ss) codes.push(c === 'H' ? 1 : c === 'E' ? 2 : 0)
-          segEnd.push(all.length / 3)
+      const scene = new THREE.Scene()
+      const pmrem = new THREE.PMREMGenerator(renderer)
+      const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+      scene.environment = envTex
+      const key = new THREE.DirectionalLight(0xffffff, 1.0)
+      key.position.set(-2, 3, 4)
+      scene.add(key)
+      const rim = new THREE.DirectionalLight(0xff8ab0, 0.9)
+      rim.position.set(3, -1, -4)
+      scene.add(rim)
+
+      const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100)
+
+      // ── Materials, coloured from the site palette ──
+      const glossy = () =>
+        new THREE.MeshPhysicalMaterial({ roughness: 0.35, metalness: 0.15, clearcoat: 0.8, clearcoatRoughness: 0.25 })
+      const mats = { H: glossy(), E: glossy(), C: glossy(), lig: glossy(), zn: glossy() }
+      mats.zn.metalness = 0.9
+      mats.zn.roughness = 0.2
+      function applyColors() {
+        const s = getComputedStyle(document.documentElement)
+        const c = (v: string, f: string) => new THREE.Color(s.getPropertyValue(v).trim() || f)
+        mats.H.color = c('--hema', '#4636a6')
+        mats.E.color = c('--ink', '#1f1a36')
+        mats.C.color = c('--muted', '#5b5570')
+        mats.lig.color = c('--eosin', '#b8355f')
+        mats.zn.color = new THREE.Color(0xb8b4c4)
+      }
+      applyColors()
+
+      // ── Backbone: one tube per run of the same secondary structure ──
+      const model = new THREE.Group()
+      const tubes: { mesh: InstanceType<typeof THREE.Mesh>; count: number }[] = []
+      for (const seg of data.segments) {
+        const n = seg.ss.length
+        const at = (i: number) =>
+          new THREE.Vector3(seg.p[i * 3] / 1000, -seg.p[i * 3 + 1] / 1000, seg.p[i * 3 + 2] / 1000)
+        let start = 0
+        while (start < n - 1) {
+          const code = seg.ss[start] as keyof typeof TUBE
+          let end = start
+          while (end + 1 < n && seg.ss[end + 1] === code) end++
+          // overlap one point into the next run so tubes join without gaps
+          const stop = Math.min(n - 1, end + 1)
+          const pts: InstanceType<typeof THREE.Vector3>[] = []
+          for (let i = start; i <= stop; i++) pts.push(at(i))
+          if (pts.length >= 2) {
+            const curve = new THREE.CatmullRomCurve3(pts)
+            const geo = new THREE.TubeGeometry(curve, Math.max(2, pts.length * 2), TUBE[code] ?? TUBE.C, code === 'C' ? 6 : 12, false)
+            const mesh = new THREE.Mesh(geo, mats[code] ?? mats.C)
+            model.add(mesh)
+            tubes.push({ mesh, count: geo.index ? geo.index.count : 0 })
+          }
+          start = stop
         }
-        pts = Float32Array.from(all)
-        ssCode = Uint8Array.from(codes)
-        total = pts.length / 3
-        lig = Float32Array.from(d.ligand.p.map((v) => v / 1000))
-        ligBonds = d.ligand.bonds
-        zinc = Float32Array.from(d.zinc.map((v) => v / 1000))
-        P = new Float32Array(total * 4)
-        L = new Float32Array(lig.length)
-        Z = new Float32Array(zinc.length)
+      }
+
+      // ── Inhibitor (ball and stick) and zinc ──
+      const ligGroup = new THREE.Group()
+      const lp = data.ligand.p
+      const ligAt = (i: number) => new THREE.Vector3(lp[i * 3] / 1000, -lp[i * 3 + 1] / 1000, lp[i * 3 + 2] / 1000)
+      const ball = new THREE.SphereGeometry(0.018, 20, 14)
+      for (let i = 0; i < lp.length / 3; i++) {
+        const m = new THREE.Mesh(ball, mats.lig)
+        m.position.copy(ligAt(i))
+        ligGroup.add(m)
+      }
+      const stick = new THREE.CylinderGeometry(0.008, 0.008, 1, 10)
+      const up = new THREE.Vector3(0, 1, 0)
+      for (let b = 0; b < data.ligand.bonds.length; b += 2) {
+        const a = ligAt(data.ligand.bonds[b])
+        const c = ligAt(data.ligand.bonds[b + 1])
+        const m = new THREE.Mesh(stick, mats.lig)
+        m.position.copy(a).add(c).multiplyScalar(0.5)
+        m.scale.set(1, a.distanceTo(c), 1)
+        m.quaternion.setFromUnitVectors(up, c.clone().sub(a).normalize())
+        ligGroup.add(m)
+      }
+      const znBall = new THREE.SphereGeometry(0.03, 24, 16)
+      for (let i = 0; i < data.zinc.length / 3; i++) {
+        const m = new THREE.Mesh(znBall, mats.zn)
+        m.position.set(data.zinc[i * 3] / 1000, -data.zinc[i * 3 + 1] / 1000, data.zinc[i * 3 + 2] / 1000)
+        ligGroup.add(m)
+      }
+      model.add(ligGroup)
+      scene.add(model)
+
+      // ── Sizing: the canvas is oversized; keep the protein sized to the slot ──
+      function resize() {
+        const w = host!.clientWidth
+        const h = host!.clientHeight
+        const slotW = wrap!.clientWidth
+        renderer.setSize(w, h, false)
+        camera.aspect = w / h
+        // world radius 1 should span ~43% of the slot width in pixels
+        const rPx = slotW * 0.43
+        const dist = h / 2 / (rPx * Math.tan((camera.fov * Math.PI) / 360))
+        camera.position.set(0, 0, dist)
+        camera.near = Math.max(0.1, dist - 3)
+        camera.far = dist + 3
+        camera.updateProjectionMatrix()
+      }
+      resize()
+
+      // ── Motion state ──
+      let yaw = 0.5
+      let pitch = 0.35
+      let yawV = 0
+      let pitchV = 0
+      let tiltX = 0
+      let tiltY = 0
+      let tiltTX = 0
+      let tiltTY = 0
+      let reveal = reduceMotion ? 1 : 0
+      let dragging = false
+      let last = { x: 0, y: 0 }
+      let visible = true
+      let raf = 0
+      let startTime = 0
+      const REVEAL_MS = 2200
+
+      function apply() {
+        const total = tubes.length
+        const shown = reveal * total
+        tubes.forEach((t, i) => {
+          const f = Math.max(0, Math.min(1, shown - i))
+          t.mesh.visible = f > 0
+          // draw ranges must be multiples of 3 (whole triangles)
+          t.mesh.geometry.setDrawRange(0, Math.floor((t.count * f) / 3) * 3)
+        })
+        ligGroup.visible = reveal > 0.92
+        const scale = reduceMotion ? 1 : 0.9 + 0.1 * Math.min(1, reveal * 1.2)
+        // inhibitor pops in once the backbone is drawn
+        ligGroup.scale.setScalar(reduceMotion ? 1 : Math.max(0.01, Math.min(1, (reveal - 0.92) / 0.08)))
+        model.scale.setScalar(scale)
+        const scrollTurn = reduceMotion ? 0 : window.scrollY * 0.0016
+        model.rotation.set(pitch + tiltY, yaw + scrollTurn + tiltX, 0, 'XYZ')
+      }
+
+      function frame() {
+        raf = 0
+        if (disposed) return
+        // Time-based so slow devices take the same ~2 s as fast ones
+        if (reveal < 1) {
+          const now = performance.now()
+          if (!startTime) startTime = now
+          reveal = Math.min(1, (now - startTime) / REVEAL_MS)
+        }
+        if (!dragging) {
+          yawV *= 0.95
+          pitchV *= 0.92
+          yaw += yawV + (reduceMotion ? 0 : 0.0018)
+          pitch += pitchV
+          pitch += (0.35 - pitch) * 0.008
+        }
+        tiltX += (tiltTX - tiltX) * 0.06
+        tiltY += (tiltTY - tiltY) * 0.06
+        apply()
+        renderer.render(scene, camera)
+        const settling =
+          dragging ||
+          Math.abs(yawV) > 1e-4 ||
+          Math.abs(pitchV) > 1e-4 ||
+          Math.abs(tiltTX - tiltX) > 1e-3 ||
+          Math.abs(tiltTY - tiltY) > 1e-3
+        if (visible && !document.hidden && (!reduceMotion || settling || reveal < 1)) {
+          raf = requestAnimationFrame(frame)
+        }
+      }
+      function kick() {
+        if (!raf && !disposed) raf = requestAnimationFrame(frame)
+      }
+
+      // Pointer events live on the slot, not the oversized canvas,
+      // so the canvas never blocks clicks on the text beside it.
+      const local = (e: PointerEvent) => {
+        const r = wrap!.getBoundingClientRect()
+        return { x: e.clientX - r.left, y: e.clientY - r.top, w: r.width, h: r.height }
+      }
+      const onDown = (e: PointerEvent) => {
+        dragging = true
+        const p = local(e)
+        last = { x: p.x, y: p.y }
+        wrap!.setPointerCapture(e.pointerId)
+        wrap!.style.cursor = 'grabbing'
+        kick()
+      }
+      const onMove = (e: PointerEvent) => {
+        const p = local(e)
+        if (dragging) {
+          yawV = (p.x - last.x) * 0.006
+          pitchV = (p.y - last.y) * 0.006
+          yaw += yawV
+          pitch = Math.max(-1.3, Math.min(1.3, pitch + pitchV))
+          last = { x: p.x, y: p.y }
+        } else if (e.pointerType === 'mouse' && !reduceMotion) {
+          tiltTX = (p.x / p.w - 0.5) * 0.35
+          tiltTY = (p.y / p.h - 0.5) * 0.25
+        }
+        kick()
+      }
+      const onUp = (e: PointerEvent) => {
+        dragging = false
+        wrap!.style.cursor = 'grab'
+        if (wrap!.hasPointerCapture(e.pointerId)) wrap!.releasePointerCapture(e.pointerId)
+        kick()
+      }
+      const onLeave = () => {
+        tiltTX = 0
+        tiltTY = 0
+        kick()
+      }
+      const onScroll = () => kick()
+      const onVisibility = () => !document.hidden && kick()
+
+      const ro = new ResizeObserver(() => {
         resize()
-        scrollTurn = window.scrollY * 0.0016
-        draw()
         kick()
       })
-      .catch(() => {})
+      ro.observe(wrap)
+      const io = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting
+        if (visible) kick()
+      })
+      io.observe(wrap)
+      const mo = new MutationObserver(() => {
+        applyColors()
+        kick()
+      })
+      mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
-    const ro = new ResizeObserver(() => {
-      resize()
-      if (total) draw()
-    })
-    ro.observe(canvas)
-    ro.observe(wrap)
+      wrap.addEventListener('pointerdown', onDown)
+      wrap.addEventListener('pointermove', onMove)
+      wrap.addEventListener('pointerup', onUp)
+      wrap.addEventListener('pointercancel', onUp)
+      wrap.addEventListener('pointerleave', onLeave)
+      window.addEventListener('scroll', onScroll, { passive: true })
+      document.addEventListener('visibilitychange', onVisibility)
 
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-      if (visible) kick()
-    })
-    io.observe(wrap)
+      kick()
 
-    const mo = new MutationObserver(() => {
-      colors = readColors()
-      if (total) draw()
-    })
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-
-    wrap.addEventListener('pointerdown', onDown)
-    wrap.addEventListener('pointermove', onMove)
-    wrap.addEventListener('pointerup', onUp)
-    wrap.addEventListener('pointercancel', onUp)
-    wrap.addEventListener('pointerleave', onLeave)
-    window.addEventListener('scroll', onScroll, { passive: true })
+      cleanup = () => {
+        cancelAnimationFrame(raf)
+        ro.disconnect()
+        io.disconnect()
+        mo.disconnect()
+        wrap.removeEventListener('pointerdown', onDown)
+        wrap.removeEventListener('pointermove', onMove)
+        wrap.removeEventListener('pointerup', onUp)
+        wrap.removeEventListener('pointercancel', onUp)
+        wrap.removeEventListener('pointerleave', onLeave)
+        window.removeEventListener('scroll', onScroll)
+        document.removeEventListener('visibilitychange', onVisibility)
+        model.traverse((o) => {
+          const mesh = o as InstanceType<typeof THREE.Mesh>
+          if (mesh.geometry) mesh.geometry.dispose()
+        })
+        Object.values(mats).forEach((m) => m.dispose())
+        envTex.dispose()
+        pmrem.dispose()
+        renderer.dispose()
+        canvas.remove()
+      }
+    })()
 
     return () => {
       disposed = true
-      cancelAnimationFrame(raf)
-      ro.disconnect()
-      io.disconnect()
-      mo.disconnect()
-      wrap.removeEventListener('pointerdown', onDown)
-      wrap.removeEventListener('pointermove', onMove)
-      wrap.removeEventListener('pointerup', onUp)
-      wrap.removeEventListener('pointercancel', onUp)
-      wrap.removeEventListener('pointerleave', onLeave)
-      window.removeEventListener('scroll', onScroll)
+      cleanup()
     }
   }, [])
 
@@ -371,8 +339,8 @@ export function Protein({ className, label }: { className?: string; label: strin
       aria-label={label}
     >
       {/* Oversized so the protein can turn freely without being clipped */}
-      <canvas
-        ref={canvasRef}
+      <div
+        ref={hostRef}
         aria-hidden
         className="pointer-events-none absolute"
         style={{ left: '-30%', top: '-50%', width: '160%', height: '200%' }}
