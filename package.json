@@ -25,7 +25,8 @@
     "react-dom": "^19.0.0",
     "remark-gfm": "^4.0.1",
     "sugar-high": "^0.9.3",
-    "tailwind-merge": "^2.5.5"
+    "tailwind-merge": "^2.5.5",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

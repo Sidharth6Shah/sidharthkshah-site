@@ -6,6 +6,8 @@ import { Footer } from './footer'
 import { ThemeProvider } from 'next-themes'
 import { Analytics } from '@vercel/analytics/next'
 import { WEBSITE_URL } from '@/lib/constants'
+import { getContent } from '@/lib/content'
+import { BindingField } from './components/binding-field'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -16,23 +18,23 @@ export const viewport: Viewport = {
   ],
 }
 
+const content = getContent()
+
 export const metadata: Metadata = {
   metadataBase: new URL(WEBSITE_URL),
   alternates: {
     canonical: '/',
   },
   title: {
-    default: 'Sidharth Shah',
-    template: '%s | Sidharth Shah',
+    default: content.person.site_title,
+    template: `%s | ${content.person.name}`,
   },
-  description:
-    'Sidharth Shah builds machine learning for drug discovery and computational biology. Biomedical engineering at the University of Waterloo.',
+  description: content.person.site_description,
   openGraph: {
-    title: 'Sidharth Shah',
-    description:
-      'Machine learning for molecules and genomes. Biomedical engineering at the University of Waterloo.',
+    title: content.person.site_title,
+    description: content.person.site_description,
     url: WEBSITE_URL,
-    siteName: 'Sidharth Shah',
+    siteName: content.person.name,
     type: 'website',
   },
 }
@@ -64,6 +66,7 @@ export default function RootLayout({
           defaultTheme="system"
           disableTransitionOnChange
         >
+          <BindingField />
           <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 sm:px-8">
             <Header />
             <div className="flex-1">{children}</div>
