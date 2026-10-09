@@ -123,3 +123,14 @@
   --tw-prose-th-borders: var(--rule);
   --tw-prose-td-borders: var(--rule);
 }
+
+/* Background DNA: kept faint so text over it stays readable, and faded
+   at the edges so it never shows a hard cut-off */
+.dna-segment {
+  opacity: 0.4;
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 22% 50%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 60% 55% at 22% 50%, #000 45%, transparent 100%);
+}
+.dark .dna-segment {
+  opacity: 0.5;
+}
