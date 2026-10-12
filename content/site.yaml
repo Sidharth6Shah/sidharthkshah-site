@@ -72,7 +72,7 @@ now:
 
   - title: Arc Institute Virtual Cell Challenge
     context: Competition, 2026
-    status: live
+    status: offline
     text: >-
       Predicting what happens to a cell when a gene is knocked down, in
       cell lines the model has never seen.

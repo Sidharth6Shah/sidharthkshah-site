@@ -75,7 +75,7 @@ export default function Home() {
 
       {c.now.length > 0 && (
         <Section id="now" title="Now">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+          <div className={`grid grid-cols-1 gap-10 ${c.now.length > 1 ? 'lg:grid-cols-2' : 'max-w-[60ch]'}`}>
             {c.now.map((item) => (
               <div key={item.title} className="flex flex-col gap-2">
                 <h3 className="text-[20px] leading-snug font-semibold tracking-tight">{item.title}</h3>
