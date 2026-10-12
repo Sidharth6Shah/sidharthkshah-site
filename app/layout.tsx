@@ -1,37 +1,53 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import { Header } from './header'
 import { Footer } from './footer'
 import { ThemeProvider } from 'next-themes'
 import { Analytics } from '@vercel/analytics/next'
+import { WEBSITE_URL } from '@/lib/constants'
+import { getContent } from '@/lib/content'
+import { BindingField } from './components/binding-field'
+import { DnaSegment } from './components/dna-segment'
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#ffffff',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fbf8f9' },
+    { media: '(prefers-color-scheme: dark)', color: '#14112a' },
+  ],
 }
 
+const content = getContent()
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://nim-fawn.vercel.app/'),
+  metadataBase: new URL(WEBSITE_URL),
   alternates: {
-    canonical: '/'
+    canonical: '/',
   },
   title: {
-    default: 'Sidharth Shah | Biomedical Engineer',
-    template: '%s | Shah'
+    default: content.person.site_title,
+    template: `%s | ${content.person.name}`,
   },
-  description:  'About Sidharth Shah.',
-};
+  description: content.person.site_description,
+  openGraph: {
+    title: content.person.site_title,
+    description: content.person.site_description,
+    url: WEBSITE_URL,
+    siteName: content.person.name,
+    type: 'website',
+  },
+}
 
-const geist = Geist({
-  variable: '--font-geist',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+// Self-hosted variable font (weight 200–800, width 75–100%)
+const bricolage = localFont({
+  src: '../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2',
+  variable: '--font-bricolage',
+  weight: '200 800',
+  style: 'normal',
+  display: 'swap',
+  declarations: [{ prop: 'font-stretch', value: '75% 100%' }],
 })
 
 export default function RootLayout({
@@ -42,20 +58,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${geistMono.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
+        className={`${bricolage.variable} bg-ground font-sans text-ink antialiased`}
       >
         <ThemeProvider
           enableSystem={true}
           attribute="class"
           storageKey="theme"
           defaultTheme="system"
+          disableTransitionOnChange
         >
-          <div className="flex min-h-screen w-full flex-col font-[family-name:var(--font-inter-tight)]">
-            <div className="relative mx-auto w-full max-w-screen-sm flex-1 px-4 pt-20">
-              <Header />
-              {children}
-              <Footer />
-            </div>
+          <BindingField />
+          <DnaSegment />
+          <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 sm:px-8">
+            <Header />
+            <div className="flex-1">{children}</div>
+            <Footer />
           </div>
         </ThemeProvider>
         <Analytics />

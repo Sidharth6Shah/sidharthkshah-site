@@ -1,275 +1,166 @@
-'use client'
-import { motion } from 'motion/react'
-import { XIcon } from 'lucide-react'
-import { Spotlight } from '@/components/ui/spotlight'
-import { Magnetic } from '@/components/ui/magnetic'
-import {
-  MorphingDialog,
-  MorphingDialogTrigger,
-  MorphingDialogContent,
-  MorphingDialogClose,
-  MorphingDialogContainer,
-} from '@/components/ui/morphing-dialog'
 import Link from 'next/link'
-import { AnimatedBackground } from '@/components/ui/animated-background'
-import {
-  PROJECTS,
-  WORK_EXPERIENCE,
-  BLOG_POSTS,
-  EMAIL,
-  SOCIAL_LINKS,
-} from './data'
+import { getLive } from '@/lib/content'
+import { Protein } from './components/protein'
+import { ProjectList } from './components/project-list'
 
-const VARIANTS_CONTAINER = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-}
-
-const VARIANTS_SECTION = {
-  hidden: { opacity: 0, y: 20, filter: 'blur(8px)' },
-  visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
-}
-
-const TRANSITION_SECTION = {
-  duration: 0.3,
-}
-
-type ProjectVideoProps = {
-  src?: string
-}
-
-function ProjectVideo({ src }: ProjectVideoProps) {
-  if (!src) {
-    return null
-  }
-
-  return (
-    <MorphingDialog
-      transition={{
-        type: 'spring',
-        bounce: 0,
-        duration: 0.3,
-      }}
-    >
-      <MorphingDialogTrigger>
-        <video
-          src={src}
-          autoPlay
-          loop
-          muted
-          className="aspect-video w-full cursor-zoom-in rounded-xl"
-        />
-      </MorphingDialogTrigger>
-      <MorphingDialogContainer>
-        <MorphingDialogContent className="relative aspect-video rounded-2xl bg-zinc-50 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950 dark:ring-zinc-800/50">
-          <video
-            src={src}
-            autoPlay
-            loop
-            muted
-            className="aspect-video h-[50vh] w-full rounded-xl md:h-[70vh]"
-          />
-        </MorphingDialogContent>
-        <MorphingDialogClose
-          className="fixed top-6 right-6 h-fit w-fit rounded-full bg-white p-1"
-          variants={{
-            initial: { opacity: 0 },
-            animate: {
-              opacity: 1,
-              transition: { delay: 0.3, duration: 0.1 },
-            },
-            exit: { opacity: 0, transition: { duration: 0 } },
-          }}
-        >
-          <XIcon className="h-5 w-5 text-zinc-500" />
-        </MorphingDialogClose>
-      </MorphingDialogContainer>
-    </MorphingDialog>
-  )
-}
-
-function MagneticSocialLink({
+function Section({
+  id,
+  title,
   children,
-  link,
 }: {
+  id: string
+  title: string
   children: React.ReactNode
-  link: string
 }) {
   return (
-    <Magnetic springOptions={{ bounce: 0 }} intensity={0.3}>
-      <a
-        href={link}
-        className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-zinc-100 px-2.5 py-1 text-sm text-black transition-colors duration-200 hover:bg-zinc-950 hover:text-zinc-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+    <section
+      id={id}
+      aria-labelledby={`${id}-title`}
+      className="grid scroll-mt-8 grid-cols-1 gap-x-12 gap-y-8 border-t py-16 md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] md:py-24"
+    >
+      <h2
+        id={`${id}-title`}
+        className="text-[15px] font-medium text-muted md:sticky md:top-10 md:self-start"
       >
-        {children}
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 15 15"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-3 w-3"
-        >
-          <path
-            d="M3.64645 11.3536C3.45118 11.1583 3.45118 10.8417 3.64645 10.6465L10.2929 4L6 4C5.72386 4 5.5 3.77614 5.5 3.5C5.5 3.22386 5.72386 3 6 3L11.5 3C11.6326 3 11.7598 3.05268 11.8536 3.14645C11.9473 3.24022 12 3.36739 12 3.5L12 9.00001C12 9.27615 11.7761 9.50001 11.5 9.50001C11.2239 9.50001 11 9.27615 11 9.00001V4.70711L4.35355 11.3536C4.15829 11.5488 3.84171 11.5488 3.64645 11.3536Z"
-            fill="currentColor"
-            fillRule="evenodd"
-            clipRule="evenodd"
-          ></path>
-        </svg>
-      </a>
-    </Magnetic>
+        {title}
+      </h2>
+      <div className="min-w-0">{children}</div>
+    </section>
   )
 }
 
-export default function Personal() {
-  return (
-    <motion.main
-      className="space-y-24"
-      variants={VARIANTS_CONTAINER}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <div className="flex-1">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Revolutionizing medical process.
-          </p>
-        </div>
-      </motion.section>
+export default function Home() {
+  const c = getLive()
+  const { person, hero } = c
 
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <h3 className="mb-5 text-lg font-medium">Selected Projects</h3>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {PROJECTS.map((project) => (
-            <div key={project.name} className="space-y-2">
-              {project.video && (
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProjectVideo src={project.video} />
-                </div>
-              )}
-              <div className="px-1">
-                <a
-                  className="font-base group relative inline-block font-[450] text-zinc-900 dark:text-zinc-50"
-                  href={project.link}
-                  target="_blank"
-                >
-                  {project.name}
-                  <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 dark:bg-zinc-50 transition-all duration-200 group-hover:max-w-full"></span>
-                </a>
-                <p className="text-base text-zinc-600 dark:text-zinc-400">
-                  {project.description}
+  return (
+    <main className="overflow-x-clip">
+      {/* Hero */}
+      <section className="grid grid-cols-1 items-center gap-6 pt-8 pb-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-12 md:pt-12 md:pb-24">
+        <div className="relative z-10 flex flex-col gap-6">
+          <h1 className="text-[clamp(40px,5.2vw,64px)] leading-[1] font-semibold tracking-[-0.03em]">
+            {person.name}
+          </h1>
+          <p className="max-w-[26ch] text-[clamp(22px,2.4vw,28px)] leading-[1.3] tracking-tight">
+            {hero.headline}
+          </p>
+          <p className="max-w-[52ch] text-[17px] leading-relaxed text-muted">{hero.intro}</p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-[16px]">
+            <a href={`mailto:${person.email}`} className="text-link font-medium text-hema">
+              Email
+            </a>
+            {c.socials.map((s) => (
+              <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="text-link">
+                {s.label}
+              </a>
+            ))}
+            {person.resume_url && (
+              <a href={person.resume_url} className="text-link" target="_blank" rel="noopener noreferrer">
+                Resume
+              </a>
+            )}
+          </div>
+        </div>
+
+        <figure className="relative z-0 my-2 md:my-0">
+          <Protein
+            className="mx-auto aspect-[5/4] w-full max-w-[600px]"
+            label="A rotating 3D ribbon diagram of an enzyme, with an inhibitor drug bound inside it."
+          />
+          <figcaption className="relative z-10 mx-auto mt-8 max-w-[46ch] text-center text-[14px] leading-snug text-muted">
+            {hero.visual_caption}
+          </figcaption>
+        </figure>
+      </section>
+
+      {c.now.length > 0 && (
+        <Section id="now" title="Now">
+          <div className={`grid grid-cols-1 gap-10 ${c.now.length > 1 ? 'lg:grid-cols-2' : 'max-w-[60ch]'}`}>
+            {c.now.map((item) => (
+              <div key={item.title} className="flex flex-col gap-2">
+                <h3 className="text-[20px] leading-snug font-semibold tracking-tight">{item.title}</h3>
+                <p className="text-[15px] text-eosin">{item.context}</p>
+                <p className="text-[17px] leading-relaxed text-muted">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      <Section id="projects" title="Projects">
+        <ProjectList projects={c.projects} tags={c.tags} />
+      </Section>
+
+      <Section id="experience" title="Experience">
+        <ol>
+          {c.experience.map((job, i) => (
+            <li
+              key={`${job.company}-${job.title}`}
+              className={`grid grid-cols-1 gap-x-10 gap-y-3 border-b py-8 last:border-b-0 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] ${i === 0 ? 'pt-0' : ''}`}
+            >
+              <div>
+                <h3 className="text-[18px] leading-snug font-semibold tracking-tight">{job.title}</h3>
+                <p className="mt-1 text-[16px]">
+                  {job.url ? (
+                    <a href={job.url} target="_blank" rel="noopener noreferrer" className="text-link">
+                      {job.company}
+                    </a>
+                  ) : (
+                    job.company
+                  )}
+                </p>
+                {job.team && <p className="mt-0.5 text-[15px] text-muted">{job.team}</p>}
+                <p className={`mt-1 text-[15px] ${job.current ? 'font-medium text-eosin' : 'text-muted'}`}>
+                  {job.dates}
                 </p>
               </div>
-            </div>
+              {job.points.length > 0 && (
+                <ul className="flex flex-col gap-2 text-[16px] leading-relaxed">
+                  {job.points.map((pt) => (
+                    <li key={pt} className="flex gap-3">
+                      <span aria-hidden className="mt-[0.7em] h-1 w-1 shrink-0 rounded-full bg-muted" />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
           ))}
-        </div>
-      </motion.section>
+        </ol>
+      </Section>
 
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <h3 className="mb-5 text-lg font-medium">Work Experience</h3>
-        <div className="flex flex-col space-y-2">
-          {WORK_EXPERIENCE.map((job) => (
-            <a
-              className="relative overflow-hidden rounded-2xl bg-zinc-300/30 p-[1px] dark:bg-zinc-600/30"
-              href={job.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              key={job.id}
-            >
-              <Spotlight
-                className="from-zinc-900 via-zinc-800 to-zinc-700 blur-2xl dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-50"
-                size={64}
-              />
-              <div className="relative h-full w-full rounded-[15px] bg-white p-4 dark:bg-zinc-950">
-                <div className="relative flex w-full flex-row justify-between">
-                  <div>
-                    <h4 className="font-normal dark:text-zinc-100">
-                      {job.title}
-                    </h4>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      {job.company}
-                    </p>
-                  </div>
-                  <p className="text-zinc-600 dark:text-zinc-400">
-                    {job.start} - {job.end}
-                  </p>
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </motion.section>
-
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        {<h3 className="mb-3 text-lg font-medium">Blog</h3>}
-        <div className="flex flex-col space-y-0">
-          <AnimatedBackground
-            enableHover
-            className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
-            transition={{
-              type: 'spring',
-              bounce: 0,
-              duration: 0.2,
-            }}
-          >
-            {BLOG_POSTS.map((post) => (
-              <Link
-                key={post.uid}
-                className="-mx-3 rounded-xl px-3 py-3"
-                href={post.link}
-                data-id={post.uid}
-              >
-                <div className="flex flex-col space-y-1">
-                  <h4 className="font-normal dark:text-zinc-100">
+      {c.articles.length > 0 && (
+        <Section id="writing" title="Writing">
+          <ul>
+            {c.articles.map((post, i) => (
+              <li key={post.url} className="border-b last:border-b-0">
+                <Link href={post.url} className={`group flex flex-col gap-1.5 py-7 ${i === 0 ? 'pt-0' : ''}`}>
+                  <span className="text-[14px] font-medium text-eosin">{post.kind}</span>
+                  <span className="max-w-[48ch] text-[20px] leading-snug font-semibold tracking-tight group-hover:text-hema">
                     {post.title}
-                  </h4>
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    {post.description}
-                  </p>
-                </div>
-              </Link>
+                  </span>
+                  <span className="max-w-[62ch] text-[16px] leading-relaxed text-muted">{post.summary}</span>
+                </Link>
+              </li>
             ))}
-          </AnimatedBackground>
-        </div>
-      </motion.section>
+          </ul>
+        </Section>
+      )}
 
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <h3 className="mb-5 text-lg font-medium">Connect</h3>
-        <p className="mb-5 text-zinc-600 dark:text-zinc-400">
-          Feel free to contact me at{' '}
-          <a className="underline dark:text-zinc-300" href={`mailto:${EMAIL}`}>
-            {EMAIL}
-          </a>
-        </p>
-        <div className="flex items-center justify-start space-x-3">
-          {SOCIAL_LINKS.map((link) => (
-            <MagneticSocialLink key={link.label} link={link.link}>
-              {link.label}
-            </MagneticSocialLink>
-          ))}
-        </div>
-      </motion.section>
-    </motion.main>
+      <section id="contact" aria-labelledby="contact-title" className="scroll-mt-8 border-t pt-16 md:pt-24">
+        <h2
+          id="contact-title"
+          className="max-w-[20ch] text-[clamp(30px,4.4vw,52px)] leading-[1.05] font-semibold tracking-[-0.03em]"
+        >
+          {c.contact.headline}
+        </h2>
+        <a
+          href={`mailto:${person.email}`}
+          className="text-link mt-6 inline-block text-[clamp(19px,2vw,24px)] font-medium text-hema"
+        >
+          {person.email}
+        </a>
+      </section>
+    </main>
   )
 }

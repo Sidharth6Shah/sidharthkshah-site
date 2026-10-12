@@ -1,0 +1,366 @@
+# ─────────────────────────────────────────────────────────────────────
+#  SITE CONTENT: the one place to edit what sidharthkshah.com says
+# ─────────────────────────────────────────────────────────────────────
+#
+#  How this works
+#  - The website reads this file directly. Change a word here, push, and
+#    the site updates. No other file needs touching for wording changes.
+#  - status: live      → shown on the site
+#    status: offline   → kept here, hidden from the site
+#  - Offline articles also redirect to the homepage, so old links don't
+#    show half-finished pages.
+#  - Article text lives in its own file (see `file:` on each article).
+#    Edit that file to fix the article itself.
+#  - Lines starting with # are notes to you. The site ignores them.
+#  - Tags must come from the `tags:` list just below, so the filter on the
+#    Projects section stays tidy.
+#
+#  Anything marked "CHECK" was written from memory and should be read
+#  over before it goes live.
+# ─────────────────────────────────────────────────────────────────────
+
+tags:
+  - Machine learning
+  - Drug discovery
+  - Genomics
+  - Medical imaging
+  - Hardware
+  - Software
+
+# ── Basics ───────────────────────────────────────────────────────────
+person:
+  name: Sidharth Shah
+  email: s78shah@uwaterloo.ca
+  location: Toronto and Waterloo, Ontario
+  # Leave blank to hide the resume link. Put a PDF in /public and use e.g. /resume.pdf
+  resume_url: ""
+  site_title: Sidharth Shah
+  site_description: >-
+    Sidharth Shah builds machine learning for drug discovery and
+    computational biology. Biomedical engineering at the University of
+    Waterloo.
+
+socials:
+  - label: GitHub
+    url: https://github.com/sidharth6shah
+  - label: LinkedIn
+    url: https://www.linkedin.com/in/sidharth-shah-805911304/
+  - label: X
+    url: https://x.com/sidharthkshah
+
+# ── Top of the homepage ──────────────────────────────────────────────
+hero:
+  headline: I build machine learning for molecules and genomes.
+  intro: >-
+    Biomedical engineering, computing option, at the University of
+    Waterloo. This fall I’m doing bioinformatics research at The Centre
+    for Applied Genomics at SickKids.
+  # Caption under the 3D protein. Structure: PDB 4ZUO.
+  visual_caption: >-
+    A bacterial enzyme from the histone deacetylase family, drawn as a
+    ribbon. Each active site holds an inhibitor (pink) beside a zinc ion.
+    Drag to turn it.
+
+# ── "Now" section ────────────────────────────────────────────────────
+now:
+  - title: Graph neural networks for autism genetics
+    context: The Centre for Applied Genomics, SickKids, fall 2026
+    status: live
+    text: >-
+      Improving a graph transformer that links genes, variants and
+      patients, and adding the SPARK cohort to grow the training data.
+
+  - title: Arc Institute Virtual Cell Challenge
+    context: Competition, 2026
+    status: offline
+    text: >-
+      Predicting what happens to a cell when a gene is knocked down, in
+      cell lines the model has never seen.
+
+# ── Projects ─────────────────────────────────────────────────────────
+#  featured: true → shown large at the top (use on one project only)
+#  links: any number; label is the link text
+#  highlights: short facts, shown on the featured project only
+projects:
+  - name: Drug–ligand binding affinity predictor
+    slug: binding-affinity
+    status: live
+    featured: true
+    year: 2026
+    area: Drug discovery
+    tags: [Machine learning, Drug discovery]
+    summary: >-
+      Predicts how strongly a drug binds its target protein. Protein
+      sequences go through ESM-2, ligands become molecular graphs, and
+      five GNN variants are tested against XGBoost and random forest
+      baselines.
+    highlights:
+      - Trained on 51,784 protein–ligand pairs
+      - Splitting by protein cut the generalization gap by 32%
+      # Also on your resume: 44% accuracy (62% of state of the art). Add if you want it shown.
+    stack: [PyTorch Geometric, ESM-2, RDKit, XGBoost]
+    links:
+      - label: Read the write-up
+        url: /blog/binding-affinity-research
+      - label: Code on GitHub
+        url: https://github.com/Sidharth6Shah/Drug-Affinity-Prediction-Project
+
+  - name: FragFlow
+    slug: fragflow
+    status: live
+    year: 2026
+    area: Generative chemistry
+    progress: In progress
+    tags: [Machine learning, Drug discovery]
+    summary: >-
+      A GFlowNet that builds drug-like molecules one fragment at a time,
+      rewarded on drug-likeness, ease of synthesis and solubility.
+    stack: [torchgfn, PyTorch Geometric, ZINC250K]
+    links:
+      - label: Code on GitHub
+        url: https://github.com/Sidharth6Shah/fragflow
+
+  - name: CardioGlasses
+    slug: cardioglasses
+    status: live
+    year: 2026
+    area: Wearables
+    progress: MHacks 2026 track winner
+    tags: [Hardware, Machine learning]
+    summary: >-
+      Glasses with heart and motion sensors that track heart metrics and
+      raise alerts. Won the FinchNode HealthTech track at MHacks 2026. I
+      built the layer that turns raw sensor signals into decisions.
+    stack: [PPG, IMU, FinchNode API]
+    links:
+      - label: Code on GitHub
+        url: https://github.com/tTong32/CardioGlasses
+
+  - name: See-DR
+    slug: see-dr
+    status: live
+    year: 2026
+    area: Medical imaging
+    progress: Accepted to CUCAI 2026
+    tags: [Machine learning, Medical imaging]
+    summary: >-
+      Finds several kinds of retinal lesions at once to help detect
+      diabetic retinopathy, using our HydraLA-Net architecture. Built
+      with my Wat.AI team.
+    stack: [PyTorch, Segmentation]
+    links:
+      - label: Read the paper
+        url: /blog/Progressive-Optimization-of-HydraLA-Net-for-Microaneurysm-Segmentation
+
+  - name: PROTACForge
+    slug: protacforge
+    # Joint project with a friend, private repo. Switch to offline if you'd rather not show it yet.
+    status: live
+    year: 2026
+    area: Drug discovery
+    progress: In progress
+    tags: [Machine learning, Drug discovery]
+    summary: >-
+      A pipeline for designing PROTAC degraders: prepare the building
+      blocks, triage candidates in 2D, then sample how the three-part
+      complex fits together.
+    stack: [RDKit, PyTorch]
+    links: []
+
+  - name: Similar-property protein generator
+    slug: protein-generator
+    # The GitHub repo (Antigen-Predictor-App) is private, so this link is broken for visitors.
+    status: live
+    year: 2025
+    area: Protein design
+    tags: [Machine learning]
+    summary: >-
+      ESM-2 suggests small edits to a protein that keep its properties.
+    stack: [ESM-2, PyTorch]
+    links:
+      - label: Code on GitHub
+        url: https://github.com/Sidharth6Shah/Antigen-Predictor-App
+
+  - name: Diabetes prediction network
+    slug: diabetes-fnn
+    status: live
+    year: 2025
+    area: Health
+    tags: [Machine learning]
+    summary: >-
+      Predicts diabetes onset from health measures found in routine
+      medical records.
+    stack: [PyTorch]
+    links:
+      - label: Code on GitHub
+        url: https://github.com/Sidharth6Shah/Diabetes-Prediction-with-FNNs
+
+  - name: Mental health support chatbot
+    slug: rag-chatbot
+    status: live
+    year: 2025
+    area: Health
+    tags: [Software]
+    summary: >-
+      A support chatbot that looks up trusted material before it answers
+      (retrieval-augmented generation), built on the OpenAI API.
+    stack: [OpenAI API, RAG]
+    links:
+      - label: Code on GitHub
+        url: https://github.com/Sidharth6Shah/ai_therapist
+
+  - name: Internship scraper
+    slug: internship-scraper
+    status: live
+    year: 2026
+    area: Automation
+    tags: [Software]
+    summary: >-
+      Checks company career pages on a schedule and records new internship
+      postings. Later extended with a Claude-powered scraping agent.
+    stack: [AWS Lambda, EventBridge, DynamoDB, Playwright]
+    links:
+      - label: Code on GitHub
+        url: https://github.com/Sidharth6Shah/Internship-Scraper-System
+
+  # ── Offline: kept here, not shown ──
+  - name: GraphComm
+    slug: graphcomm
+    # CHECK: written from memory. Add details before switching to live.
+    status: offline
+    year: 2026
+    area: Spatial transcriptomics
+    tags: [Machine learning, Genomics]
+    summary: >-
+      A dual graph neural network for spatial transcriptomics data.
+    stack: [PyTorch Geometric]
+    links: []
+
+  - name: Residual
+    slug: residual
+    # Planned, not built yet.
+    status: offline
+    year: 2026
+    area: Protein language models
+    tags: [Machine learning]
+    summary: >-
+      A BERT-style protein language model.
+    stack: [PyTorch]
+    links: []
+
+  - name: EMG signal processing
+    slug: emg
+    # CHECK: BME 294 final project. Add details before switching to live.
+    status: offline
+    year: 2026
+    area: Biosignals
+    tags: [Hardware]
+    summary: >-
+      Recording and processing muscle signals (EMG) for the BME 294
+      circuits course.
+    stack: []
+    links: []
+
+# ── Experience ───────────────────────────────────────────────────────
+#  points: resume-style bullets, shown under each job
+#  current: true → shown as ongoing
+experience:
+  - title: Bioinformatics Software Research Student
+    company: The Centre for Applied Genomics, SickKids
+    team: Scherer Lab, affiliated with Molecular Genetics at U of T
+    dates: Fall 2026 to now
+    current: true
+    status: live
+    points:
+      - Improving a heterogeneous graph transformer for autism genetics that models genes, patients and genetic variants together
+      - Integrating the SPARK autism cohort, roughly doubling the training data
+
+  - title: Machine Learning Researcher
+    company: Wat.AI
+    team: See-DR team
+    # CHECK: dates and title wording.
+    dates: 2025 to 2026
+    status: live
+    points:
+      - Co-developed HydraLA-Net, a CNN that segments four kinds of retinal lesions at once
+      - Co-authored a paper accepted to CUCAI 2026
+
+  - title: Software Engineer Intern
+    company: LeapAP
+    url: https://www.leapap.com
+    # CHECK: add your real resume bullets.
+    dates: 2026
+    status: live
+    points:
+      - Built web scrapers for an accounts-payable automation platform
+
+  - title: Software Engineer Intern
+    company: Bell Canada
+    url: https://www.bell.ca
+    # CHECK: add your real resume bullets.
+    dates: 2025
+    status: live
+    points:
+      - Built and maintained features on a mission-critical internal app, including OAuth 2.0 sign-in
+      - Managed CI/CD pipelines and AWS deployments
+
+  - title: QA Engineer Intern
+    company: autonomik.ai
+    url: https://autonomik.ai
+    # CHECK: add your real resume bullets.
+    dates: 2024 to 2025
+    status: live
+    points:
+      - Tested ML pipelines and services in Python on GCP with CI/CD
+
+# ── Writing ──────────────────────────────────────────────────────────
+#  file: where the article text lives (edit that file to fix the article)
+#  url:  the page address on the site
+articles:
+  - title: Predicting drug–protein binding affinity with graph neural networks
+    kind: Notes
+    date: 2026-02-16
+    status: live
+    url: /blog/binding-affinity-research
+    file: app/blog/binding-affinity-research/page.mdx
+    summary: >-
+      An end-to-end GNN pipeline, and what I learned about data splits,
+      protein embeddings and molecular graphs.
+
+  - title: Progressive optimization of HydraLA-Net for microaneurysm segmentation
+    kind: Paper
+    status: live
+    url: /blog/Progressive-Optimization-of-HydraLA-Net-for-Microaneurysm-Segmentation
+    file: public/pdfs/Progressive_Optimization_of_HydraLA_Net_for_Microaneurysm_Segmentation.pdf
+    summary: >-
+      Our Wat.AI team’s paper, accepted to CUCAI 2026: why we built it,
+      how, and what the results mean.
+
+  - title: "HydraLA-Net: multi-lesion segmentation for diabetic retinopathy"
+    kind: Notes
+    date: 2026-03-10
+    status: live
+    url: /blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection
+    file: app/blog/HydraLA-Net:-Multi-Lesion-Segmentation-for-Diabetic-Retinopathy-Detection/page.mdx
+    summary: >-
+      Preprocessing, class imbalance and augmentation when segmenting
+      several lesion types at once.
+
+  # Leftovers from the website template. Offline = hidden and redirected home.
+  - title: Exploring the intersection of design, AI and design engineering
+    kind: Template
+    status: offline
+    url: /blog/exploring-the-intersection-of-design-ai-and-design-engineering
+    file: app/blog/exploring-the-intersection-of-design-ai-and-design-engineering/page.mdx
+    summary: Example post from the template.
+
+  - title: How to export metadata from MDX for Next.js SEO
+    kind: Template
+    status: offline
+    url: /blog/example-mdx-metadata
+    file: app/blog/example-mdx-metadata/page.mdx
+    summary: Example post from the template.
+
+# ── Bottom of the homepage ───────────────────────────────────────────
+contact:
+  headline: Working on ML for biology or drug discovery? Let’s talk.
