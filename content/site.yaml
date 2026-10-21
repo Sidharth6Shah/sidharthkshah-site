@@ -45,8 +45,10 @@ socials:
     url: https://github.com/sidharth6shah
   - label: LinkedIn
     url: https://www.linkedin.com/in/sidharth-shah-805911304/
-  - label: X
-    url: https://x.com/sidharthkshah
+  - label: Devpost
+    url: https://devpost.com/Sidharth6Shah
+  # - label: X
+  #   url: https://x.com/sidharthkshah
 
 # ── Top of the homepage ──────────────────────────────────────────────
 hero:
