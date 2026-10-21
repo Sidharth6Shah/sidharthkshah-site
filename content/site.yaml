@@ -69,8 +69,7 @@ now:
     context: The Centre for Applied Genomics, SickKids, fall 2026
     status: live
     text: >-
-      Improving a graph transformer that links genes, variants and
-      patients, and adding the SPARK cohort to grow the training data.
+      Building a heterogeneous graph-based transformer (HGT) to rank every human gene by its ASD risk, using de novo variants from SPARK, SSC, and MSSNG data cohorts (>70,000 people).
 
   - title: Arc Institute Virtual Cell Challenge
     context: Competition, 2026
@@ -267,9 +266,9 @@ projects:
 #  points: resume-style bullets, shown under each job
 #  current: true → shown as ongoing
 experience:
-  - title: Bioinformatics Software Research Student
+  - title: Machine Learning Researcher
     company: The Centre for Applied Genomics, SickKids
-    team: Scherer Lab, affiliated with Molecular Genetics at U of T
+    team: Scherer Lab, affiliated with Dept. of Molecular Genetics at U of T
     dates: Fall 2026 to now
     current: true
     status: live
