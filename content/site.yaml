@@ -66,7 +66,7 @@ hero:
 # ── "Now" section ────────────────────────────────────────────────────
 now:
   - title: Graph neural networks for autism genetics
-    context: The Centre for Applied Genomics, SickKids, fall 2026
+    context: SickKids, The Centre for Applied Genomics
     status: live
     text: >-
       Building a heterogeneous graph-based transformer (HGT) to rank every human gene by its ASD risk, using de novo variants from SPARK, SSC, and MSSNG data cohorts (>70,000 people).
