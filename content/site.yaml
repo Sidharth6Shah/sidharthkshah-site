@@ -156,7 +156,7 @@ projects:
   - name: PROTACForge
     slug: protacforge
     # Joint project with a friend, private repo. Switch to offline if you'd rather not show it yet.
-    status: live
+    status: offline
     year: 2026
     area: Drug discovery
     progress: In progress
